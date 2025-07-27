@@ -12,6 +12,7 @@ This project simulates a **realistic, asynchronous video processing pipeline** t
 
 The system uses **Docker Compose** to orchestrate several services:
 
+* **Frontend**: Modern React web application for video upload and management
 * **API Gateway**: Receives video uploads, stores in **S3**, and sends jobs to **RabbitMQ**.
 * **Worker**: Consumes jobs, processes videos, updates the database.
 * **Prometheus**: Scrapes metrics from services.
@@ -20,24 +21,24 @@ The system uses **Docker Compose** to orchestrate several services:
 ```mermaid
 graph TD
     subgraph User
-        U[User Client]
+        U[User Client / Browser]
     end
 
-    subgraph "AWS EC2 Instance"
-        subgraph "Docker Environment"
-            A[API Gateway / Flask]
-            W[Video Processor / Worker]
-            Q[Message Queue / RabbitMQ]
-            P[Monitoring / Prometheus]
-            G[Dashboard / Grafana]
-        end
+    subgraph "Docker Environment"
+        F[Frontend / React + Nginx]
+        A[API Gateway / Flask]
+        W[Video Processor / Worker]
+        Q[Message Queue / RabbitMQ]
+        P[Monitoring / Prometheus]
+        G[Dashboard / Grafana]
     end
 
     subgraph "AWS Services"
         S3[S3 Bucket for Videos]
     end
 
-    U -- "POST /upload (video file)" --> A
+    U -- "Accesses Web UI" --> F
+    F -- "API calls (upload, download)" --> A
     A -- "1. Stores video" --> S3
     A -- "2. Publishes job message" --> Q
     W -- "3. Consumes job message" --> Q
@@ -53,12 +54,13 @@ graph TD
 
 | Category       | Tools Used                              |
 | -------------- | --------------------------------------- |
-| **Backend**    | Python (Flask)                          |
-| **Queue**      | RabbitMQ                                |
-| **Containers** | Docker, Docker Compose                  |
-| **Monitoring** | Prometheus, Grafana                     |
-| **Cloud**      | AWS (EC2 for compute, S3 for storage)   |
-| **CI/CD**      | GitHub Actions, Bash Scripts (optional) |
+| **Frontend**   | React 18, Tailwind CSS, Nginx          |
+| **Backend**    | Python (Flask)                         |
+| **Queue**      | RabbitMQ                               |
+| **Containers** | Docker, Docker Compose                 |
+| **Monitoring** | Prometheus, Grafana                    |
+| **Cloud**      | AWS (EC2 for compute, S3 for storage) |
+| **CI/CD**      | GitHub Actions, Bash Scripts (optional)|
 
 ---
 
@@ -99,18 +101,18 @@ S3_BUCKET=your-unique-s3-bucket-name
 ### ▶️ Run the Stack
 
 ```bash
-docker-compose up --build -d
-docker-compose ps
+./scripts/deploy.sh
 ```
 
 ### 🌐 Access Services
 
-| Service        | URL                                              | Credentials       |
-| -------------- | ------------------------------------------------ | ----------------- |
-| **API**        | [http://localhost:5001](http://localhost:5001)   | -                 |
-| **RabbitMQ**   | [http://localhost:15672](http://localhost:15672) | `guest` / `guest` |
-| **Prometheus** | [http://localhost:9090](http://localhost:9090)   | -                 |
-| **Grafana**    | [http://localhost:3000](http://localhost:3000)   | `admin` / `admin` |
+| Service        | URL                                              | Credentials       | Description                    |
+| -------------- | ------------------------------------------------ | ----------------- | ------------------------------ |
+| **Frontend**   | [http://localhost:3001](http://localhost:3001)  | -                 | Modern React web interface    |
+| **API**        | [http://localhost:5001](http://localhost:5001)  | -                 | REST API endpoints            |
+| **RabbitMQ**   | [http://localhost:15672](http://localhost:15672)| `guest` / `guest` | Message queue management      |
+| **Prometheus** | [http://localhost:9090](http://localhost:9090)  | -                 | Metrics collection & querying |
+| **Grafana**    | [http://localhost:3000](http://localhost:3000)  | `admin` / `admin` | Metrics visualization         |
 
 ---
 

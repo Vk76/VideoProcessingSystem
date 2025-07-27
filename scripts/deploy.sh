@@ -47,6 +47,9 @@ AWS_PROFILE=my-dev-profile  # Use the profile you created for your personal AWS 
 RABBITMQ_DEFAULT_USER=guest
 RABBITMQ_DEFAULT_PASS=guest
 
+# Frontend Configuration
+REACT_APP_API_URL=http://localhost:5001
+
 # Add your AWS credentials here or use IAM roles (recommended)
 # AWS_ACCESS_KEY_ID=your-access-key
 # AWS_SECRET_ACCESS_KEY=your-secret-key
@@ -86,20 +89,34 @@ else
     echo "⚠️  API service may not be ready yet"
 fi
 
+# Test Frontend endpoint
+echo "🧪 Testing Frontend endpoint..."
+if curl -f http://localhost:3001 &> /dev/null; then
+    echo "✅ Frontend service is healthy"
+else
+    echo "⚠️  Frontend service may not be ready yet"
+fi
+
 # Display service URLs
 echo ""
 echo "🎉 Deployment completed!"
 echo ""
 echo "📋 Service URLs:"
-echo "  🌐 API Gateway:  http://$(curl -s http://checkip.amazonaws.com):5001"
-echo "  🐰 RabbitMQ UI:  http://$(curl -s http://checkip.amazonaws.com):15672 (guest/guest)"
-echo "  📊 Prometheus:   http://$(curl -s http://checkip.amazonaws.com):9090"
-echo "  📈 Grafana:      http://$(curl -s http://checkip.amazonaws.com):3000 (admin/admin)"
+echo "  � Frontend (Web):  http://$(curl -s http://checkip.amazonaws.com):3001"
+echo "  �🌐 API Gateway:     http://$(curl -s http://checkip.amazonaws.com):5001"
+echo "  🐰 RabbitMQ UI:     http://$(curl -s http://checkip.amazonaws.com):15672 (guest/guest)"
+echo "  📊 Prometheus:      http://$(curl -s http://checkip.amazonaws.com):9090"
+echo "  📈 Grafana:         http://$(curl -s http://checkip.amazonaws.com):3000 (admin/admin)"
 echo ""
-echo "📝 Next steps:"
-echo "1. Upload a test video: curl -X POST -F \"file=@test.mp4\" http://your-ip:5001/upload"
-echo "2. Monitor the processing in Grafana dashboard"
-echo "3. Check RabbitMQ for message queue status"
+echo "📝 How to use:"
+echo "1. 🌐 Open the web interface: http://your-ip:3001"
+echo "2. 📤 Upload videos using the drag & drop interface"
+echo "3. 📊 Monitor processing status in real-time"
+echo "4. 📥 Download processed videos when complete"
+echo "5. 📈 View system metrics in Grafana dashboard"
+echo ""
+echo "🔧 Alternative - API Usage:"
+echo "  curl -X POST -F \"file=@test.mp4\" http://your-ip:5001/upload"
 echo ""
 echo "🔧 To view logs:"
 echo "  docker-compose logs -f [service-name]"

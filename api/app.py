@@ -3,12 +3,14 @@ import json
 import time
 import uuid
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask_cors import CORS
 import boto3
 import pika
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from werkzeug.utils import secure_filename
 import logging
+import io
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)  # Enable CORS for frontend
 
 # Configuration
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
@@ -220,6 +223,88 @@ def get_job_status(job_id):
         'job_id': job_id,
         'status': 'processing',
         'message': 'Job status tracking not implemented yet'
+    }), 200
+
+@app.route('/download/<job_id>', methods=['GET'])
+def download_video(job_id):
+    """Download processed video"""
+    try:
+        if not s3_client:
+            return jsonify({'error': 'S3 client not available'}), 500
+        
+        # In a real implementation, you'd query a database to get the processed file key
+        processed_key = f"processed/{job_id}_processed.mp4"
+        
+        # Generate presigned URL for download
+        try:
+            download_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': S3_BUCKET, 'Key': processed_key},
+                ExpiresIn=3600  # URL expires in 1 hour
+            )
+            return jsonify({
+                'download_url': download_url,
+                'expires_in': 3600
+            }), 200
+        except Exception as e:
+            return jsonify({'error': f'File not found or not ready: {str(e)}'}), 404
+            
+    except Exception as e:
+        logger.error(f"Download error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/thumbnail/<job_id>', methods=['GET'])
+def get_thumbnail(job_id):
+    """Get video thumbnail"""
+    try:
+        if not s3_client:
+            return jsonify({'error': 'S3 client not available'}), 500
+        
+        # In a real implementation, you'd query a database to get the thumbnail key
+        thumbnail_key = f"thumbnails/{job_id}_thumbnail.jpg"
+        
+        try:
+            # Generate presigned URL for thumbnail
+            thumbnail_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': S3_BUCKET, 'Key': thumbnail_key},
+                ExpiresIn=3600  # URL expires in 1 hour
+            )
+            return jsonify({
+                'thumbnail_url': thumbnail_url,
+                'expires_in': 3600
+            }), 200
+        except Exception as e:
+            return jsonify({'error': f'Thumbnail not found: {str(e)}'}), 404
+            
+    except Exception as e:
+        logger.error(f"Thumbnail error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/jobs', methods=['GET'])
+def list_jobs():
+    """List all processing jobs (placeholder - in real implementation, this would query a database)"""
+    # This would typically query a database for job listings
+    sample_jobs = [
+        {
+            'job_id': str(uuid.uuid4()),
+            'filename': 'sample_video_1.mp4',
+            'status': 'completed',
+            'created_at': datetime.utcnow().isoformat(),
+            'file_size': 15728640
+        },
+        {
+            'job_id': str(uuid.uuid4()),
+            'filename': 'sample_video_2.mp4',
+            'status': 'processing',
+            'created_at': datetime.utcnow().isoformat(),
+            'file_size': 25165824
+        }
+    ]
+    
+    return jsonify({
+        'jobs': sample_jobs,
+        'total': len(sample_jobs)
     }), 200
 
 @app.route('/metrics', methods=['GET'])

@@ -64,6 +64,20 @@ services:
       - video_network
     restart: unless-stopped
 
+  # Frontend Web Application
+  frontend:
+    build: ./frontend
+    container_name: video_frontend
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001
+    depends_on:
+      - api
+    networks:
+      - video_network
+    restart: unless-stopped
+
   # Prometheus Monitoring
   prometheus:
     image: prom/prometheus:latest
