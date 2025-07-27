@@ -1,0 +1,51 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # API Gateway metrics
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api:5000']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # Worker service metrics
+  - job_name: 'video-worker'
+    static_configs:
+      - targets: ['worker:8080']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # RabbitMQ metrics
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15672']
+    scrape_interval: 30s
+    metrics_path: '/api/prometheus/metrics'
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Alerting configuration (optional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load and evaluate rules in this file every 'evaluation_interval' seconds.
+# rule_files:
+#   - "alert_rules.yml"
