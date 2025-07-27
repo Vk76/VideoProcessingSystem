@@ -28,7 +28,7 @@ app.config['UPLOAD_FOLDER'] = '/app/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Environment variables
-S3_BUCKET = os.getenv('S3_BUCKET', 'video-processing-bucket')
+S3_BUCKET = os.getenv('S3_BUCKET', 'video-processing-system-bucket')
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', '5672'))
 AWS_REGION = os.getenv('AWS_DEFAULT_REGION', 'us-east-1')
