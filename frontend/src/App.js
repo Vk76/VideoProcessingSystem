@@ -55,27 +55,23 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div style={{ minHeight: '100vh' }}>
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <main className="container py-8">
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }} className="space-y-6">
           {/* Stats Section */}
           <Stats stats={stats} />
           
           {/* Upload Section */}
-          <div className="animate-slideUp">
-            <VideoUpload onUploadSuccess={handleUploadSuccess} />
-          </div>
+          <VideoUpload onUploadSuccess={handleUploadSuccess} />
           
           {/* Jobs List Section */}
-          <div className="animate-fadeIn">
-            <VideoList 
-              jobs={jobs} 
-              loading={loading} 
-              onRefresh={loadJobs}
-            />
-          </div>
+          <VideoList 
+            jobs={jobs} 
+            loading={loading} 
+            onRefresh={loadJobs}
+          />
         </div>
       </main>
     </div>

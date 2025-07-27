@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Video, AlertCircle, CheckCircle, Loader } from 'lucide-react';
 import { videoService } from '../services/videoService';
 
 const VideoUpload = ({ onUploadSuccess }) => {
@@ -82,68 +81,79 @@ const VideoUpload = ({ onUploadSuccess }) => {
   return (
     <div className="card">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-secondary-900 mb-2">
+        <h2 className="text-2xl font-bold mb-2" style={{ color: '#1f2937' }}>
           Upload Video for Processing
         </h2>
-        <p className="text-secondary-600">
+        <p style={{ color: '#6b7280' }}>
           Upload your video file to start processing. Supported formats: MP4, AVI, MOV (max 100MB)
         </p>
       </div>
 
       <div
         {...getRootProps()}
-        className={`
-          border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300
-          ${isDragActive 
-            ? 'border-primary-400 bg-primary-50' 
-            : uploading 
-            ? 'border-secondary-300 bg-secondary-50 cursor-not-allowed'
-            : 'border-secondary-300 hover:border-primary-400 hover:bg-primary-50'
-          }
-        `}
+        className={`upload-zone ${isDragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
+        style={{
+          border: `2px dashed ${
+            isDragActive ? '#2563eb' : uploading ? '#d1d5db' : '#d1d5db'
+          }`,
+          backgroundColor: isDragActive ? '#dbeafe' : uploading ? '#f9fafb' : 'white',
+          cursor: uploading ? 'not-allowed' : 'pointer'
+        }}
       >
         <input {...getInputProps()} />
         
         <div className="flex flex-col items-center space-y-4">
           {uploading ? (
-            <Loader className="w-12 h-12 text-primary-600 animate-spin" />
+            <div style={{
+              width: '48px',
+              height: '48px',
+              border: '4px solid #e5e7eb',
+              borderTop: '4px solid #3b82f6',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
           ) : (
-            <div className="p-4 bg-primary-100 rounded-full">
-              <Upload className="w-8 h-8 text-primary-600" />
+            <div style={{
+              padding: '16px',
+              backgroundColor: '#eff6ff',
+              borderRadius: '50%',
+              fontSize: '32px'
+            }}>
+              📤
             </div>
           )}
           
           <div>
             {uploading ? (
               <>
-                <p className="text-lg font-medium text-secondary-900 mb-2">
+                <p className="text-lg font-medium mb-2" style={{ color: '#1f2937' }}>
                   Uploading video...
                 </p>
-                <div className="w-64 bg-secondary-200 rounded-full h-2 mx-auto">
+                <div className="progress-bar" style={{ width: '256px', margin: '0 auto' }}>
                   <div 
-                    className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                    className="progress-fill"
                     style={{ width: `${uploadProgress}%` }}
                   ></div>
                 </div>
-                <p className="text-sm text-secondary-600 mt-2">
+                <p className="text-sm mt-2" style={{ color: '#6b7280' }}>
                   {uploadProgress}% complete
                 </p>
               </>
             ) : isDragActive ? (
               <>
-                <p className="text-lg font-medium text-primary-700">
+                <p className="text-lg font-medium" style={{ color: '#1d4ed8' }}>
                   Drop your video here
                 </p>
-                <p className="text-sm text-primary-600">
+                <p className="text-sm" style={{ color: '#2563eb' }}>
                   Release to upload
                 </p>
               </>
             ) : (
               <>
-                <p className="text-lg font-medium text-secondary-900">
-                  Drop your video here, or <span className="text-primary-600">browse</span>
+                <p className="text-lg font-medium" style={{ color: '#1f2937' }}>
+                  Drop your video here, or <span style={{ color: '#2563eb' }}>browse</span>
                 </p>
-                <p className="text-sm text-secondary-600">
+                <p className="text-sm" style={{ color: '#6b7280' }}>
                   MP4, AVI, MOV up to 100MB
                 </p>
               </>
@@ -154,14 +164,14 @@ const VideoUpload = ({ onUploadSuccess }) => {
 
       {/* Upload Result */}
       {uploadResult && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg animate-fadeIn">
+        <div className="mt-6 p-4 bg-green-50 border rounded-lg" style={{ borderColor: '#16a34a' }}>
           <div className="flex items-center space-x-3">
-            <CheckCircle className="w-5 h-5 text-green-600" />
+            <span style={{ color: '#16a34a', fontSize: '20px' }}>✅</span>
             <div>
-              <p className="text-green-800 font-medium">
+              <p style={{ color: '#166534', fontWeight: '500' }}>
                 Upload successful!
               </p>
-              <p className="text-green-700 text-sm">
+              <p style={{ color: '#15803d', fontSize: '14px' }}>
                 Job ID: {uploadResult.job_id}
               </p>
             </div>
@@ -171,10 +181,10 @@ const VideoUpload = ({ onUploadSuccess }) => {
 
       {/* Error Message */}
       {error && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg animate-fadeIn">
+        <div className="mt-6 p-4 bg-red-50 border rounded-lg" style={{ borderColor: '#dc2626' }}>
           <div className="flex items-center space-x-3">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <p className="text-red-800">{error}</p>
+            <span style={{ color: '#dc2626', fontSize: '20px' }}>❌</span>
+            <p style={{ color: '#991b1b' }}>{error}</p>
           </div>
         </div>
       )}
