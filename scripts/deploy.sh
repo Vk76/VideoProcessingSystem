@@ -39,8 +39,9 @@ if [ ! -f .env ]; then
     echo "⚠️  Creating .env file..."
     cat > .env << EOF
 # AWS Configuration
-S3_BUCKET=your-s3-bucket-name-here
-AWS_DEFAULT_REGION=us-east-1
+S3_BUCKET=video-processing-system-bucket
+AWS_DEFAULT_REGION=ap-south-1
+AWS_PROFILE=my-dev-profile  # Use the profile you created for your personal AWS account
 
 # RabbitMQ Configuration
 RABBITMQ_DEFAULT_USER=guest

@@ -63,8 +63,6 @@ services:
     networks:
       - video_network
     restart: unless-stopped
-    deploy:
-      replicas: 2  # Scale workers for better throughput
 
   # Prometheus Monitoring
   prometheus:
