@@ -119,6 +119,7 @@ def upload_to_s3(file, filename):
         logger.info(f"Uploaded file to S3: {s3_key}")
         return s3_key
     except Exception as e:
+        print("bucket = ", S3_BUCKET)
         logger.error(f"Failed to upload to S3: {e}")
         raise
 
